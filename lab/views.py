@@ -2,9 +2,11 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from .models import Laboratory, Test, TestCategories
 from rest_framework import status
+from django.shortcuts import get_object_or_404
 from .serializer import LaboratorySerializer, TestSerializer, LabTestSerializer, TestCategoriesSerializer
-from rest_framework.generics import ListCreateAPIView, ListAPIView
+from rest_framework.generics import ListCreateAPIView, ListAPIView, RetrieveAPIView
 from geopy.geocoders import GoogleV3
+from django.db.models import Q
 import requests
 google_key= 'AIzaSyDA-wB9OtVQ3DhdSmPz8kwp5gdM0ZwZFxA'
 
@@ -12,6 +14,42 @@ class LaboratoryListView(ListAPIView):
     serializer_class = LaboratorySerializer
     queryset = Laboratory.objects.all()
     
+class LaboratoryTestsView(ListAPIView):
+    serializer_class = TestSerializer
+
+    def get_queryset(self):
+        laboratory_id = self.kwargs.get('laboratory_id')
+        laboratory = get_object_or_404(Laboratory, id=laboratory_id)
+
+        # Get all Test objects associated with the given laboratory
+        tests = Test.objects.filter(testprices__laboratory=laboratory).distinct()
+        print(tests)
+
+        return tests
+    
+    
+class TestDetailView(RetrieveAPIView):
+    queryset = Test.objects.all()
+    serializer_class = TestSerializer
+    lookup_field = 'id'
+
+
+
+
+class TestSearchView(ListAPIView):
+    serializer_class = TestSerializer
+
+    def get_queryset(self):
+        query_params = self.request.query_params
+        search_query = query_params.get('q', '')
+        queryset = Test.objects.filter(
+            Q(name__icontains=search_query) |
+            Q(category__name__icontains=search_query) |
+            Q(testprices__laboratory__name__icontains=search_query) |
+            Q(testprices__laboratory__city__icontains=search_query)
+        ).distinct()
+        return queryset
+
 
 class NearbyLaboratoryView(APIView):
     def post(self, request):
@@ -74,19 +112,6 @@ class LaboratoryAndTestSearchView(APIView):
         return Response(response_data)
 
 
-
-class LaboratoryTestsView(APIView):
-    def get(self, request, laboratory_id):
-        try:
-            laboratory = Laboratory.objects.get(id=laboratory_id)
-        except Laboratory.DoesNotExist:
-            return Response({'error': 'Laboratory not found'}, status=404)
-
-        tests_performed = laboratory.test_set.all()
-        test_serializer = LabTestSerializer(tests_performed, many=True)
-
-        return Response(test_serializer.data)
-    
     
 class FindPlace(APIView):
     def get(self, request):

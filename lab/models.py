@@ -33,13 +33,24 @@ class Test(models.Model):
         verbose_name = 'Test'
         verbose_name_plural = 'Tests'
     name = models.CharField(max_length=255)
-    price = models.DecimalField(decimal_places=2, max_digits= 12)
-    laboratory = models.ManyToManyField(Laboratory)
     category = models.ForeignKey(TestCategories, on_delete=models.CASCADE)
     createdAt = models.DateTimeField(auto_now_add=True)
     
     def __str__(self):
         return self.name
+    
+    
+class TestPrices(models.Model):
+    class Meta:
+        verbose_name = 'Test Price'
+        verbose_name = 'Test Prices'
+    
+    test = models.ForeignKey(Test, on_delete=models.CASCADE)
+    laboratory = models.ForeignKey(Laboratory, on_delete=models.CASCADE)
+    price = models.DecimalField(decimal_places=2, max_digits= 12)
+    
+    def __str__(self):
+        return f"{self.test.name} - {self.laboratory.name}: {self.price}"
     
 
     

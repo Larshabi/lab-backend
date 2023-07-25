@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Laboratory, TestCategories, Test
+from .models import Laboratory, TestCategories, Test, TestPrices
 from geopy.geocoders import GoogleV3 
 # import requests
 
@@ -15,14 +15,30 @@ class TestCategoriesSerializer(serializers.ModelSerializer):
     class Meta:
         model = TestCategories
         fields = '__all__'
+        
+class TestPriceSerializer(serializers.ModelSerializer):
+    laboratory = LaboratorySerializer()
+
+    class Meta:
+        model = TestPrices
+        fields = ('laboratory', 'price')
 
 class TestSerializer(serializers.ModelSerializer):
-    laboratory = LaboratorySerializer(many=True)
     category = TestCategoriesSerializer()
+    prices = serializers.SerializerMethodField()
 
     class Meta:
         model = Test
-        fields = '__all__'
+        fields = [
+            'id',
+            'category',
+            'name',
+            'prices'
+        ]
+    def get_prices(self, obj):
+        prices = TestPrices.objects.filter(test=obj)
+        serializer = TestPriceSerializer(prices, many=True)
+        return serializer.data
         
 
 class NearbySerializer(serializers.ModelSerializer):
