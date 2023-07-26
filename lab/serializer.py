@@ -3,8 +3,7 @@ from .models import Laboratory, TestCategories, Test, TestPrices
 # from geopy.geocoders import GoogleV3 
 # import requests
 
-reverse = '461033145172484425100x127157'
-google_key= 'AIzaSyDA-wB9OtVQ3DhdSmPz8kwp5gdM0ZwZFxA'
+
 
 class LaboratorySerializer(serializers.ModelSerializer):
     class Meta:
