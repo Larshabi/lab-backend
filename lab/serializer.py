@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from .models import Laboratory, TestCategories, Test, TestPrices
-from geopy.geocoders import GoogleV3 
+# from geopy.geocoders import GoogleV3 
 # import requests
 
 reverse = '461033145172484425100x127157'
