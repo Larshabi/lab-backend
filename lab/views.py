@@ -1,9 +1,9 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from .models import Laboratory, Test, TestCategories
+from .models import Laboratory, Test, TestCategories, TestPrices
 from rest_framework import status
 from django.shortcuts import get_object_or_404
-from .serializer import LaboratorySerializer, TestSerializer, LabTestSerializer, TestCategoriesSerializer
+from .serializer import LaboratorySerializer, TestSerializer, LabTestSerializer, TestCategoriesSerializer, TestLabSerializer, TestPriceSerializer
 from rest_framework.generics import ListCreateAPIView, ListAPIView, RetrieveAPIView
 # from geopy.geocoders import GoogleV3
 from django.db.models import Q
@@ -15,12 +15,13 @@ class LaboratoryListView(ListAPIView):
     queryset = Laboratory.objects.all()
     
 class LaboratoryTestsView(ListAPIView):
-    serializer_class = TestSerializer
+    serializer_class = TestLabSerializer
 
     def get_queryset(self):
         laboratory_id = self.kwargs.get('laboratory_id')
         laboratory = get_object_or_404(Laboratory, id=laboratory_id)
         tests = Test.objects.filter(testprices__laboratory=laboratory).distinct()
+        test_price = TestPrices.objects.filter(laboratory__id=laboratory_id)
         return tests
     
     

@@ -14,7 +14,7 @@ class CitySearchViewTest(TestCase):
         Laboratory.objects.create(name='Lab 3', city='Chicago')
 
     def test_city_search(self):
-        response = self.client.get('/lab/search/', {'q': 'New'})
+        response = self.client.get('/lab/search/', {'q': 'Ife'})
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         
 

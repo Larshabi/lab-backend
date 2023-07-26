@@ -40,6 +40,16 @@ class TestSerializer(serializers.ModelSerializer):
         serializer = TestPriceSerializer(prices, many=True)
         return serializer.data
         
+        
+class TestLabSerializer(serializers.ModelSerializer):
+    category = TestCategoriesSerializer()
+    class Meta:
+        model = Test
+        fields = [
+            'id',
+            'name',
+            'category'
+        ]
 
 class NearbySerializer(serializers.ModelSerializer):
     class Meta:
