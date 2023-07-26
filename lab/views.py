@@ -8,7 +8,7 @@ from rest_framework.generics import ListCreateAPIView, ListAPIView, RetrieveAPIV
 # from geopy.geocoders import GoogleV3
 from django.db.models import Q
 # import requests
-google_key= 'AIzaSyDA-wB9OtVQ3DhdSmPz8kwp5gdM0ZwZFxA'
+
 
 class LaboratoryListView(ListAPIView):
     serializer_class = LaboratorySerializer
