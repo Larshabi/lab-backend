@@ -49,7 +49,16 @@ class TestSearchView(ListAPIView):
             Q(testprices__laboratory__city__icontains=search_query)
         ).distinct()
         return queryset
-
+class CitySearchView(ListAPIView):
+    serializer_class = LaboratorySerializer
+    def get_queryset(self):
+        query_params = self.request.query_params
+        search_query = query_params.get('q', '')
+        queryset = Laboratory.objects.filter(
+            Q(city__icontains=search_query)
+        ).distinct()
+        return queryset
+    
 
 class NearbyLaboratoryView(APIView):
     def post(self, request):
